@@ -18,6 +18,14 @@ FastAPI backend for the Karigar hyperlocal service provider booking platform.
 - ✅ Dashboard & Analytics (statistics, earnings, upcoming bookings)
 - ✅ Reviews Management (view all reviews received)
 
+### Admin Features (Implemented)
+- ✅ User Management (view, update roles, activate/deactivate users)
+- ✅ Provider Verification (verify/unverify providers, view pending providers)
+- ✅ Category Management (CRUD operations for service categories)
+- ✅ Booking Management (view all bookings, detailed booking information)
+- ✅ Dashboard & Analytics (platform-wide statistics, revenue, top providers)
+- ✅ Review Moderation (view all reviews, delete inappropriate reviews)
+
 ## Setup Instructions
 
 ### 1. Create Virtual Environment
@@ -120,6 +128,37 @@ All provider endpoints require authentication (Bearer token from Supabase Auth) 
 **Reviews:**
 - `GET /providers/reviews` - Get all reviews received (with pagination)
 
+### Admin Endpoints
+
+All admin endpoints require authentication (Bearer token from Supabase Auth) and admin role.
+
+**User Management:**
+- `GET /admins/users` - Get all users (with pagination and role filter)
+- `GET /admins/users/{user_id}` - Get detailed user information
+- `PUT /admins/users/{user_id}/role` - Update user role
+- `PUT /admins/users/{user_id}/status` - Activate/deactivate user account
+
+**Provider Verification:**
+- `GET /admins/providers/pending` - Get all providers pending verification
+- `PUT /admins/providers/{provider_id}/verify` - Verify or unverify a provider
+
+**Category Management:**
+- `GET /admins/categories` - Get all categories
+- `POST /admins/categories` - Create a new category
+- `PUT /admins/categories/{category_id}` - Update a category
+- `DELETE /admins/categories/{category_id}` - Delete a category (only if unused)
+
+**Booking Management:**
+- `GET /admins/bookings` - Get all bookings (with pagination and status filter)
+- `GET /admins/bookings/{booking_id}` - Get detailed booking information
+
+**Dashboard & Analytics:**
+- `GET /admins/dashboard` - Get platform-wide statistics (users, bookings, revenue, top providers, recent activity)
+
+**Review Moderation:**
+- `GET /admins/reviews` - Get all reviews (with pagination)
+- `DELETE /admins/reviews/{review_id}` - Delete a review (moderation)
+
 ## Database Schema
 
 The application uses the following Supabase tables:
@@ -168,8 +207,10 @@ backend/
 │   ├── api/
 │   │   ├── customers/
 │   │   │   └── routes.py      # Customer endpoints
-│   │   └── providers/
-│   │       └── routes.py      # Provider endpoints
+│   │   ├── providers/
+│   │   │   └── routes.py      # Provider endpoints
+│   │   └── admins/
+│   │       └── routes.py      # Admin endpoints
 │   ├── core/
 │   │   ├── config.py          # Configuration
 │   │   ├── database.py        # Database connections
