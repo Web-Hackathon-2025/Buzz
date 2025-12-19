@@ -236,3 +236,83 @@ class ProviderDashboardStats(BaseModel):
     total_reviews: int
     upcoming_bookings: List[dict] = []
     recent_reviews: List[dict] = []
+
+
+# Admin Models
+class UserResponse(BaseModel):
+    id: str
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    full_name: Optional[str] = None
+    role: str
+    created_at: datetime
+    is_active: Optional[bool] = True
+    
+    class Config:
+        from_attributes = True
+
+
+class UserListResponse(BaseModel):
+    users: List[UserResponse]
+    total: int
+    page: int
+    page_size: int
+
+
+class ProviderVerificationUpdate(BaseModel):
+    is_verified: bool
+    verification_notes: Optional[str] = None
+
+
+class CategoryCreate(BaseModel):
+    name: str = Field(..., min_length=1, max_length=100)
+    icon_url: Optional[str] = None
+
+
+class CategoryUpdate(BaseModel):
+    name: Optional[str] = Field(None, min_length=1, max_length=100)
+    icon_url: Optional[str] = None
+
+
+class AdminDashboardStats(BaseModel):
+    total_users: int
+    total_customers: int
+    total_providers: int
+    verified_providers: int
+    pending_providers: int
+    total_bookings: int
+    pending_bookings: int
+    confirmed_bookings: int
+    completed_bookings: int
+    cancelled_bookings: int
+    total_revenue: Decimal
+    total_categories: int
+    total_reviews: int
+    avg_platform_rating: float
+    recent_users: List[dict] = []
+    recent_bookings: List[dict] = []
+    top_providers: List[dict] = []
+
+
+class AdminBookingResponse(BaseModel):
+    id: str
+    customer_id: str
+    provider_id: str
+    status: BookingStatus
+    scheduled_for: datetime
+    service_address: str
+    total_price: Optional[Decimal]
+    notes: Optional[str]
+    created_at: datetime
+    customer_name: Optional[str] = None
+    customer_email: Optional[str] = None
+    provider_name: Optional[str] = None
+    provider_email: Optional[str] = None
+    
+    class Config:
+        from_attributes = True
+
+
+class ReviewModerationUpdate(BaseModel):
+    is_visible: Optional[bool] = None
+    moderation_notes: Optional[str] = None

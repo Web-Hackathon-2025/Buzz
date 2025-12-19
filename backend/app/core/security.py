@@ -106,3 +106,27 @@ async def get_current_provider(
     current_user["provider_id"] = provider_profile["id"]
     
     return current_user
+
+
+async def get_current_admin(
+    current_user: dict = Depends(get_current_user)
+) -> dict:
+    """Ensure the current user is an admin"""
+    # Check role from profiles table
+    supabase = get_supabase()
+    profile_result = supabase.table("profiles").select("*").eq("id", current_user["id"]).execute()
+    
+    if not profile_result.data or len(profile_result.data) == 0:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User profile not found"
+        )
+    
+    profile = profile_result.data[0]
+    if profile.get("role") != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin access required"
+        )
+    
+    return current_user
