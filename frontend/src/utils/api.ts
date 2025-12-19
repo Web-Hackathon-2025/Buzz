@@ -3,9 +3,9 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 export const api = {
   async request(endpoint: string, options: RequestInit = {}) {
     const token = localStorage.getItem('auth_token');
-    const headers: HeadersInit = {
+    const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      ...options.headers,
+      ...(options.headers as Record<string, string> | undefined),
     };
 
     if (token) {
@@ -99,6 +99,21 @@ export const api = {
 
   getMyReviews() {
     return this.request('/customers/reviews/my');
+  },
+
+  // Auth
+  login(data: { email: string; password: string }) {
+    return this.request('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  signup(data: { email: string; password: string; full_name: string; phone?: string }) {
+    return this.request('/auth/signup', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
   },
 };
 
