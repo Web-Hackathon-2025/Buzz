@@ -5,6 +5,7 @@ from app.core.database import close_db_pool
 from app.api.customers.routes import router as customers_router
 from app.api.providers.routes import router as providers_router
 from app.api.admins.routes import router as admins_router
+from app.api.auth.routes import router as auth_router
 import uvicorn
 
 app = FastAPI(
@@ -26,6 +27,7 @@ app.add_middleware(
 app.include_router(customers_router)
 app.include_router(providers_router)
 app.include_router(admins_router)
+app.include_router(auth_router)
 
 @app.get("/")
 async def root():

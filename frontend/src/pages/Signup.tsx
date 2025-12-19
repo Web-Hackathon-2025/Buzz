@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, User, Phone, ArrowRight, UserPlus } from 'lucide-react';
+import { api } from '../utils/api';
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -30,18 +31,22 @@ const Signup = () => {
     }
 
     try {
-      // TODO: Replace with actual Supabase auth
-      // For now, simulate signup
-      if (formData.email && formData.password) {
-        localStorage.setItem('auth_token', 'demo_token');
-        localStorage.setItem('user', JSON.stringify({ 
-          email: formData.email, 
-          fullName: formData.fullName,
-          role: 'customer' 
-        }));
+      const res = await api.signup({
+        email: formData.email,
+        password: formData.password,
+        full_name: formData.fullName,
+        phone: formData.phone,
+      });
+
+      if (res?.access_token) {
+        localStorage.setItem('auth_token', res.access_token);
+        if (res.refresh_token) {
+          localStorage.setItem('refresh_token', res.refresh_token);
+        }
+        localStorage.setItem('user', JSON.stringify(res.user || { email: formData.email, fullName: formData.fullName, role: 'customer' }));
         navigate('/search');
       } else {
-        setError('Please fill all required fields');
+        setError('Signup failed. Please try again.');
       }
     } catch (err: any) {
       setError(err.message || 'Signup failed');
