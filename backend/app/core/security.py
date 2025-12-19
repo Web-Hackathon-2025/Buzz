@@ -69,3 +69,40 @@ async def get_current_customer(
     
     return current_user
 
+
+async def get_current_provider(
+    current_user: dict = Depends(get_current_user)
+) -> dict:
+    """Ensure the current user is a provider and return provider profile"""
+    # Check role from profiles table
+    supabase = get_supabase()
+    profile_result = supabase.table("profiles").select("*").eq("id", current_user["id"]).execute()
+    
+    if not profile_result.data or len(profile_result.data) == 0:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User profile not found"
+        )
+    
+    profile = profile_result.data[0]
+    if profile.get("role") != "provider":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Provider access required"
+        )
+    
+    # Get provider profile
+    provider_profile_result = supabase.table("provider_profiles").select("*").eq("user_id", current_user["id"]).execute()
+    
+    if not provider_profile_result.data or len(provider_profile_result.data) == 0:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Provider profile not found. Please complete your provider profile setup."
+        )
+    
+    provider_profile = provider_profile_result.data[0]
+    
+    # Add provider_id to user dict for convenience
+    current_user["provider_id"] = provider_profile["id"]
+    
+    return current_user

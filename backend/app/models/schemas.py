@@ -136,3 +136,103 @@ class CategoryResponse(BaseModel):
     class Config:
         from_attributes = True
 
+
+# Provider Management Models
+class ProviderProfileUpdate(BaseModel):
+    category_id: Optional[int] = None
+    bio: Optional[str] = None
+    base_price: Optional[Decimal] = None
+    latitude: Optional[float] = Field(None, ge=-90, le=90)
+    longitude: Optional[float] = Field(None, ge=-180, le=180)
+
+
+class ProviderProfileFullResponse(BaseModel):
+    id: str
+    user_id: str
+    category_id: Optional[int]
+    category_name: Optional[str] = None
+    bio: Optional[str]
+    base_price: Optional[Decimal]
+    is_verified: bool
+    avg_rating: float
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    provider_name: Optional[str] = None
+    provider_email: Optional[str] = None
+    provider_phone: Optional[str] = None
+    
+    class Config:
+        from_attributes = True
+
+
+# Availability Models
+class AvailabilityCreate(BaseModel):
+    day_of_week: int = Field(..., ge=0, le=6, description="0=Sunday, 1=Monday, ..., 6=Saturday")
+    start_time: time
+    end_time: time
+    
+    @validator('end_time')
+    def end_time_after_start(cls, v, values):
+        if 'start_time' in values and v <= values['start_time']:
+            raise ValueError('End time must be after start time')
+        return v
+
+
+class AvailabilityResponse(BaseModel):
+    id: str
+    provider_id: str
+    day_of_week: int
+    start_time: time
+    end_time: time
+    created_at: datetime
+    
+    class Config:
+        from_attributes = True
+
+
+class AvailabilityUpdate(BaseModel):
+    start_time: Optional[time] = None
+    end_time: Optional[time] = None
+
+
+# Provider Booking Models
+class ProviderBookingResponse(BaseModel):
+    id: str
+    customer_id: str
+    provider_id: str
+    status: BookingStatus
+    scheduled_for: datetime
+    service_address: str
+    total_price: Optional[Decimal]
+    notes: Optional[str]
+    created_at: datetime
+    customer_name: Optional[str] = None
+    customer_email: Optional[str] = None
+    customer_phone: Optional[str] = None
+    
+    class Config:
+        from_attributes = True
+
+
+class BookingRescheduleRequest(BaseModel):
+    new_scheduled_for: datetime
+    
+    @validator('new_scheduled_for')
+    def scheduled_for_must_be_future(cls, v):
+        if v <= datetime.now():
+            raise ValueError('Scheduled time must be in the future')
+        return v
+
+
+# Provider Dashboard Models
+class ProviderDashboardStats(BaseModel):
+    total_bookings: int
+    pending_bookings: int
+    confirmed_bookings: int
+    completed_bookings: int
+    cancelled_bookings: int
+    total_earnings: Decimal
+    avg_rating: float
+    total_reviews: int
+    upcoming_bookings: List[dict] = []
+    recent_reviews: List[dict] = []
