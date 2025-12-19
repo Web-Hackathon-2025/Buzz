@@ -4,7 +4,7 @@ import asyncpg
 from typing import Optional
 
 
-# Supabase client
+# Supabase client (prefers service key if available for server-side ops)
 supabase: Optional[Client] = None
 
 
@@ -12,7 +12,8 @@ def get_supabase() -> Client:
     """Get Supabase client instance"""
     global supabase
     if supabase is None:
-        supabase = create_client(settings.supabase_url, settings.supabase_key)
+        key = settings.supabase_service_key or settings.supabase_key
+        supabase = create_client(settings.supabase_url, key)
     return supabase
 
 

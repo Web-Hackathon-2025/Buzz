@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, LogIn, ArrowRight } from 'lucide-react';
+import { api } from '../utils/api';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -15,14 +16,14 @@ const Login = () => {
     setError('');
 
     try {
-      // TODO: Replace with actual Supabase auth
-      // For now, simulate login
-      if (email && password) {
-        localStorage.setItem('auth_token', 'demo_token');
-        localStorage.setItem('user', JSON.stringify({ email, role: 'customer' }));
+      const res = await api.login({ email, password });
+      if (res?.access_token) {
+        localStorage.setItem('auth_token', res.access_token);
+        if (res.refresh_token) {
+          localStorage.setItem('refresh_token', res.refresh_token);
+        }
+        localStorage.setItem('user', JSON.stringify(res.user || { email, role: 'customer' }));
         navigate('/search');
-      } else {
-        setError('Please enter email and password');
       }
     } catch (err: any) {
       setError(err.message || 'Login failed');
