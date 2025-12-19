@@ -11,6 +11,13 @@ FastAPI backend for the Karigar hyperlocal service provider booking platform.
 - ✅ Booking Tracking
 - ✅ Reviews & Ratings
 
+### Provider Features (Implemented)
+- ✅ Profile Management (view and update provider profile)
+- ✅ Availability Management (CRUD operations for availability slots)
+- ✅ Booking Management (view, accept, reject, reschedule, complete bookings)
+- ✅ Dashboard & Analytics (statistics, earnings, upcoming bookings)
+- ✅ Reviews Management (view all reviews received)
+
 ## Setup Instructions
 
 ### 1. Create Virtual Environment
@@ -85,6 +92,34 @@ All customer endpoints require authentication (Bearer token from Supabase Auth).
 - `POST /customers/reviews` - Create a review for completed booking
 - `GET /customers/reviews/my` - Get customer's reviews
 
+### Provider Endpoints
+
+All provider endpoints require authentication (Bearer token from Supabase Auth) and provider role.
+
+**Profile Management:**
+- `GET /providers/profile` - Get current provider's profile
+- `PUT /providers/profile` - Update provider profile (bio, price, location, category)
+
+**Availability Management:**
+- `GET /providers/availability` - Get all availability slots
+- `POST /providers/availability` - Create a new availability slot
+- `PUT /providers/availability/{availability_id}` - Update an availability slot
+- `DELETE /providers/availability/{availability_id}` - Delete an availability slot
+
+**Booking Management:**
+- `GET /providers/bookings` - Get all bookings (with optional status filter)
+- `GET /providers/bookings/{booking_id}` - Get specific booking details
+- `PUT /providers/bookings/{booking_id}/accept` - Accept a pending booking
+- `PUT /providers/bookings/{booking_id}/reject` - Reject a pending booking
+- `PUT /providers/bookings/{booking_id}/reschedule` - Reschedule a booking
+- `PUT /providers/bookings/{booking_id}/complete` - Mark booking as completed
+
+**Dashboard & Analytics:**
+- `GET /providers/dashboard` - Get dashboard statistics (bookings, earnings, ratings, upcoming bookings, recent reviews)
+
+**Reviews:**
+- `GET /providers/reviews` - Get all reviews received (with pagination)
+
 ## Database Schema
 
 The application uses the following Supabase tables:
@@ -131,8 +166,10 @@ The API returns standard HTTP status codes:
 backend/
 ├── app/
 │   ├── api/
-│   │   └── customers/
-│   │       └── routes.py      # Customer endpoints
+│   │   ├── customers/
+│   │   │   └── routes.py      # Customer endpoints
+│   │   └── providers/
+│   │       └── routes.py      # Provider endpoints
 │   ├── core/
 │   │   ├── config.py          # Configuration
 │   │   ├── database.py        # Database connections
